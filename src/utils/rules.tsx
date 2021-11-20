@@ -1,5 +1,5 @@
 export const rules = {
-    required: (msg: string) => (
+    required: (msg: string = "Required value") => (
         {required: true, message: msg}
     )
 }

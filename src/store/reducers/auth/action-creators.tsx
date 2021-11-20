@@ -2,6 +2,7 @@ import {AuthActionEnum, ISetAuthAction, ISetError, ISetLoading, ISetUserAction} 
 import {IUser} from "../../../modules/IUser";
 import {AppDispatch} from "../../index";
 import axios from "axios";
+import UserService from "../../../api/UserService";
 
 export const AuthActioCreators = {
     setUser: (user: IUser): ISetUserAction => ({type: AuthActionEnum.SET_USER, payload: user}),
@@ -13,15 +14,15 @@ export const AuthActioCreators = {
             dispatch(AuthActioCreators.setIsLoading(true))
 
             setTimeout(async () => {
-                const response = await axios.get<IUser[]>('./users.json')
+                const response = await UserService.getUsers()
                 const mockUser = response.data.find(user => user.username === username && user.password === password);
 
                 if (mockUser) {
                     localStorage.setItem('auth', 'true')
                     localStorage.setItem('username', mockUser.username)
 
-                    dispatch(AuthActioCreators.setIsAuth(true))
                     dispatch(AuthActioCreators.setUser(mockUser))
+                    dispatch(AuthActioCreators.setIsAuth(true))
                 } else {
                     dispatch(AuthActioCreators.setIsError('User was not found'))
                 }
