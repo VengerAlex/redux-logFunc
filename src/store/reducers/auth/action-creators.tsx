@@ -12,29 +12,31 @@ export const AuthActioCreators = {
         try {
             dispatch(AuthActioCreators.setIsLoading(true))
 
-            const {data} = await axios.get<IUser[]>('./users.json')
-            const mockUser = data.find((user: IUser) => user.username === username && user.password === password);
+            setTimeout(async () => {
+                const response = await axios.get<IUser[]>('./users.json')
+                const mockUser = response.data.find(user => user.username === username && user.password === password);
 
-            if(mockUser){
-                localStorage.setItem('auth', 'true')
-                localStorage.setItem('username', mockUser.username)
+                if (mockUser) {
+                    localStorage.setItem('auth', 'true')
+                    localStorage.setItem('username', mockUser.username)
 
-                dispatch(AuthActioCreators.setIsAuth(true))
-                dispatch(AuthActioCreators.setUser(mockUser))
-            }else{
-                dispatch(AuthActioCreators.setIsError('User was not found'))
-            }
+                    dispatch(AuthActioCreators.setIsAuth(true))
+                    dispatch(AuthActioCreators.setUser(mockUser))
+                } else {
+                    dispatch(AuthActioCreators.setIsError('User was not found'))
+                }
+                dispatch(AuthActioCreators.setIsLoading(false))
+            }, 1000)
 
-            dispatch(AuthActioCreators.setIsLoading(false))
-        } catch (err){
+        } catch (err) {
             dispatch(AuthActioCreators.setIsError('Something went wrong'))
         }
     },
     logout: () => async (dispatch: AppDispatch) => {
-        try {
+        localStorage.removeItem('auth')
+        localStorage.removeItem('username')
 
-        } catch (err){
-
-        }
+        dispatch(AuthActioCreators.setUser({} as IUser))
+        dispatch(AuthActioCreators.setIsAuth(false))
     },
 }
